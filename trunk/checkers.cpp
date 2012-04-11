@@ -1,4 +1,5 @@
 #include "checkers.h"
+#include "piece.h"
 
 checkers::checkers() {
   //construct a new board, X's = 1, O's = -1
@@ -77,4 +78,16 @@ void checkers::print() {
 void checkers::play() {
 
 
+}
+
+int checkers::checkForWin() {
+
+
+  return 0;
+}
+
+int checkers::checkForJump() {
+
+
+  return 0;
 }
