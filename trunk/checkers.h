@@ -14,7 +14,7 @@ class checkers {
   void print();
   void play();
   int checkForWin();
-  int checkForJumps();
+  int checkForJump();
 
  private:
   vector <vector <piece> > board; //Fill a 2D board with type piece
