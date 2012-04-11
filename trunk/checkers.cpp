@@ -4,11 +4,11 @@
 checkers::checkers() {
   //construct a new board, X's = 1, O's = -1
 
-  int piece = 0;
-  vector<int> temp;
+  int holder;
+  vector<piece> temp;
   for(int i = 0; i < 8; i++) {      //each column
     for(int j = 0; j < 8; j++) {    //each row
-      if(i < 3) { // if the top four rows
+      if(i < 3) { // if the top three rows
         piece = -1;  //place the O's
       }
       else if(i > 4) {
@@ -17,6 +17,7 @@ checkers::checkers() {
       else {
         piece = 0;
       }
+      
       if(i % 2 == 0) {    //If row is even
         if(j % 2 == 1) {  //Then place pieces only if column is odd
           temp.push_back(piece);
