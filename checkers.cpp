@@ -4,36 +4,25 @@
 checkers::checkers() {
   //construct a new board, X's = 1, O's = -1
 
-  int holder;
-  vector<piece> temp;
+  vector <piece> temp;
   for(int i = 0; i < 8; i++) {      //each column
+    piece holder[8];     //Declare an array of 8 pieces (0-7)
     for(int j = 0; j < 8; j++) {    //each row
-      if(i < 3) { // if the top three rows
-        piece = -1;  //place the O's
-      }
-      else if(i > 4) {
-        piece = 1;   //place the X's
+      if( (i+j) % 2 == 0) { // if the coordinate's sum is even
+        holder[j].setIsNull(1);  //make that space null
       }
       else {
-        piece = 0;
+	if(i <= 2) {
+	  holder[j].setTeam(-1);  //make team o's
+	}
+	else if (i >= 5) {
+	  holder[j].setTeam(1);   //make team x's
+	}
+	else {
+	  holder[j].setTeam(0);   //make blanks
+	}
       }
-      
-      if(i % 2 == 0) {    //If row is even
-        if(j % 2 == 1) {  //Then place pieces only if column is odd
-          temp.push_back(piece);
-        }
-        else {
-          temp.push_back(0);
-        }
-      }
-      else {    //If row is odd
-        if(j % 2 == 0) {
-          temp.push_back(piece);
-        }
-        else {
-          temp.push_back(0);
-        }
-      }
+      temp.push_back(holder[j]);
     }
     board.push_back(temp);
     temp.clear();
@@ -48,29 +37,14 @@ void checkers::print() {
 
   char c;
   cout << endl << " ";
-  for(int k = 0; k < 8; k++) {
+  for(int k = 0; k < 8; k++) {  //print row of numbers (1-8)
     cout << " " << k+1;
   }
   for(int i = 0; i < 8; i++) {      
-    cout << endl << i+1;
+    cout << endl << i+1;       //print number at the beginning of each row
       
     for(int j = 0; j < 8; j++) {
-      if(board[i][j] == 1) {
-        c = 'x';
-      }
-      if(board[i][j] == -1) {
-        c = 'o';
-      }
-      if(board[i][j] == 2) {
-        c = 'X';
-      }
-      if(board[i][j] == -2) {   
-        c = 'O';
-      }
-      if(board[i][j] == 0) {
-        c = ' ';
-      }
-      cout << " " << c;
+      cout << " " << board[i][j].getRep();  //print the representative piece for each board spot
     }
   }
   cout << endl << endl;
