@@ -57,17 +57,47 @@ void checkers::print() {
 
 //play checkers!
 void checkers::play() {
-  int winner;  //variable that keeps track of who won once game is over
+  int winner;          //variable that keeps track of who won once game is over
+  int errorCheck = 0;  //variable that 
+  int tempx;           //temporarily holds the user input
+  int tempy;
+  int x;               //holds the actual coordinates of the user input.  (Basically, tempx-1 and tempy-1 since array elements start at 0)
+  int y;
+
   cout << endl << endl << "***** Welcome to Checkers ******" << endl << endl;
 
   while( (winner = checkForWin()) == 0 ) { //while nobody has won yet
-    print(); //First, print the board
-    while(checkForJump()) {  //while there is a jump available (including double jumps)
-      /* Implement forced jump code */
-    }
-    //Next, select a piece to move, as long as there is not a jump you must take
 
-  }
+    print(); //First, print the board
+
+    //Next, get inputs
+    while(errorCheck == 1) {
+      errorCheck = 0;  //make error false again
+
+      if(turn == 1) {
+	cout << "X, input coordinates of the piece you want to move. (column, row): ";
+      }
+      else {
+	cout << "X, input coordinates of the piece you want to move. (column, row): ";
+      }
+      cin >> tempx >> tempy;  //put the inputs into tempx and tempy
+      x = tempx-1;  //subtract one from each to match cooridinates with vector elements
+      y = tempy-1;
+      
+    }
+    
+
+    while(checkForJump()) {  //while there is a jump available (including double jumps)
+
+      /* Implement forced jump code */
+
+    }
+    //Next, move a piece as long as there is not a jump you must take
+    
+
+  } //END OF WHILE LOOP
+
+
 
   if(winner == 1) { //if x wins
     cout << endl << "***** X wins! ******" << endl << endl;
@@ -90,20 +120,23 @@ int checkers::checkForJump() {
 	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
 
 	      if(i-2 >= 0 && (j-2*k >= 0 && j-2*k < 8)) {
-	      //use j-turn to check correct direction for blanks ***CRAIG what does this mean?***
+	      //use j-k to check correct direction for blanks ***CRAIG what does this mean?***
+		///This is edge checking, to make sure there exists a spot on the board j-2*k.
 		if(board[i-1][j-k].getTeam() == -turn) {  //if there is an opposing piece adjacent to the king
 		  if(board[i-2][j-2*k].getTeam() == 0) {  // and there is a blank space behind it
 		    return turn;  //return 1 if x can play, -1 if o can play
 		  }
 		}
 	      }
-	      if(i+2 < 8 && (j-2*k >= 0 && j-2*k < 8)) { //***CRAIG what does this mean?***
+	      if(i+2 < 8 && (j-2*k >= 0 && j-2*k < 8)) { //***CRAIG what does this mean?***  
+		//This is edge checking, to make sure there exists a spot on the board j-2*k.
 		if(board[i+1][j-k].getTeam() == -turn) {  //if there is an opposing piece adjancent to the king
 		  if(board[i+2][j-2*k].getTeam() == 0) {  //and there is a blank space behind it
 		    return turn;  //return 1 if x can play, -1 if o can play
 		  }
 		}
 	      }
+
 	    }
 	  }
 	  else {  //check the forward diagonals for opposing pieces to jump
@@ -123,6 +156,7 @@ int checkers::checkForJump() {
 	      }
 	    }
 	  }
+
 	}	
       }
     }
@@ -149,11 +183,14 @@ int checkers::checkForWin() {
   }
 
   //Next, check if there are no legal moves left for the current player ***CRAIG why don't you call check for jump instead?***
+  //I did below this, but this is merely checking for regular legal moves
   for(int i = 0; i < 8; i++) {    //column coordinate
     for(int j = 0; j < 8; j++) {  //row coordinate  (check both ways
       if(board[i][j].getIsNull() == 0) { 
 	if(board[i][j].getTeam() == turn) {   //if team of the piece == turn
 	  //***CRAIG the code below is confusing. Please clarify***
+	  /*So if the current player has a king, then I immediately return because they will it is extremely likely they will always have a legal move.  I can fix this later if we need to, but for now it ought to be fine
+	  Next, if a potential spot a piece can move to exists, and is a blank space, then the piece has a legal move and I return 0*/
 	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
 	    return 0;                         //the game is not over
 	  }
