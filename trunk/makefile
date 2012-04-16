@@ -13,4 +13,4 @@ checkers.o: checkers.cpp
 	g++ -c checkers.cpp
 
 clean:
-	rm *~ *.o main
+	rm *~ *.o Checkers
