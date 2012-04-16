@@ -1,7 +1,7 @@
 all: main
 
 main: piece.o checkers.o main.o
-	g++ piece.o checkers.o main.o -o main
+	g++ piece.o checkers.o main.o -o Checkers
 
 main.o: main.cpp
 	g++ -c main.cpp
