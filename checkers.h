@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cctype>  //to use isdigit in input checking
 #include "piece.h"
 
 using namespace std;

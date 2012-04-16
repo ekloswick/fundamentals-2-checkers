@@ -8,9 +8,9 @@ checkers::checkers() {
 
   //construct a new board, x's = 1, o's = -1
   vector <piece> temp;            //temporary holding vector
-  for(int i = 0; i < 8; i++) {    //each column
+  for(int i = 0; i < 8; i++) {    //each row
     piece holder[8];              //temporary holder array of 8 pieces (0-7)
-    for(int j = 0; j < 8; j++) {  //loop through each row
+    for(int j = 0; j < 8; j++) {  //fill each row with a column
       if( (i+j) % 2 == 0) {       //if the coordinate's sum is even
         holder[j].setIsNull(1);   //make that space unplayable
       }
@@ -71,20 +71,33 @@ void checkers::play() {
     print(); //First, print the board
 
     //Next, get inputs
-    while(errorCheck == 1) {
+    do {  //Use do-while so this happens at least once every turn, and repeats if there is an error in the input
       errorCheck = 0;  //make error false again
 
       if(turn == 1) {
-	cout << "X, input coordinates of the piece you want to move. (column, row): ";
+	cout << "X, input coordinates of the piece you want to move. (row column): ";
       }
       else {
-	cout << "X, input coordinates of the piece you want to move. (column, row): ";
+	cout << "O, input coordinates of the piece you want to move. (row column): ";
       }
       cin >> tempx >> tempy;  //put the inputs into tempx and tempy
-      x = tempx-1;  //subtract one from each to match cooridinates with vector elements
-      y = tempy-1;
-      
-    }
+      cout << tempx << endl << tempy << endl;
+
+      //big if statement below checks if input is okay, that is, if that digit is between 1 and 8.
+      if( (tempx >= 1 && tempx <= 8) && (tempy >= 1 && tempy <= 8) ) {
+	x = tempx-1;  //subtract one from each to match cooridinates with vector elements
+	y = tempy-1;
+	
+	if(board[x][y].getTeam() != turn) {  //If the user inputs a piece that is not his
+	  errorCheck = 1;
+	  cout << "Error: Piece is not yours. Please try again." << endl;
+	}
+      }
+      else {
+	errorCheck = 1;
+	cout << "Error: input invalid. Please try again." << endl;
+      }
+    } while(errorCheck == 1);
     
 
     while(checkForJump()) {  //while there is a jump available (including double jumps)
@@ -94,6 +107,8 @@ void checkers::play() {
     }
     //Next, move a piece as long as there is not a jump you must take
     
+
+    turn *= -1;   //Switch whose turn it is
 
   } //END OF WHILE LOOP
 
