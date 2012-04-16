@@ -74,6 +74,7 @@ void piece::setTeam(int b) {
   }
 }
 
+//sets the piece to a king
 void piece::setIsKing(int c) {
 
   if(isNull == 0 && team != 0) {  //if piece is not null and not a blank
