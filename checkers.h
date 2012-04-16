@@ -13,10 +13,11 @@ class checkers {
   ~checkers();
   void print();
   void play();
-  int checkForWin();
   int checkForJump();
+  int checkForWin();
 
  private:
+  int turn; 
   vector <vector <piece> > board; //Fill a 2D board with type piece
 };
 
