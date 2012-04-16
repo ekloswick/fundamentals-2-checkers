@@ -3,7 +3,7 @@
 int main () {
 
   checkers a;
-  a.print();
+  a.play();
 
 }
 
