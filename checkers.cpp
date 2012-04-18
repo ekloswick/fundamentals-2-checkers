@@ -59,18 +59,26 @@ void checkers::print() {
 
 //play checkers!
 void checkers::play() {
+  piece holder;        //Holds a board piece for switching
   int winner;          //variable that keeps track of who won once game is over
-  int errorCheck = 0;  //variable that 
-  int tempx;           //temporarily holds the user input
+  int errorCheck = 0;  //variable that checks if piece selection input is valid
+  int errorCheck2 = 0; //variable that checks if piece movement input is valid
+  int tempx;           //temporarily holds the user input for piece selection
   int tempy;
+  int tempa;           //temporarily holds the user input for piece movement
+  int tempb;
   int x;               //holds the actual coordinates of the user input.  (Basically, tempx-1 and tempy-1 since array elements start at 0)
   int y;
+  int a;
+  int b;
+
 
   cout << endl << endl << "***** Welcome to Checkers ******" << endl << endl;
 
   while( (winner = checkForWin()) == 0 ) { //while nobody has won yet
 
     print(); //First, print the board
+    countPieces();  //Then count the pieces of each type.
 
     //Next, get inputs
     do {  //Use do-while so this happens at least once every turn, and repeats if there is an error in the input
@@ -82,7 +90,7 @@ void checkers::play() {
 	cout << "O, input coordinates of the piece you want to move. (row column): ";
       }
       cin >> tempx >> tempy;  //put the inputs into tempx and tempy
-      cout << tempx << endl << tempy << endl;
+      //cout << "x = " << tempx-1 << endl << "y = " << tempy-1 << endl;
       //big if statement below checks if input is okay, that is, if that digit is between 1 and 8.
       if( (tempx >= 1 && tempx <= 8) && (tempy >= 1 && tempy <= 8) ) {
 	x = tempx-1;  //subtract one from each to match cooridinates with vector elements
@@ -90,23 +98,71 @@ void checkers::play() {
 	if(board[x][y].getTeam() != turn) {  //If the user inputs a piece that is not his
 	  errorCheck = 1;
 	  cout << "Error: Piece is not yours. Please try again." << endl;
+	  print();
 	}
       }
       else {
 	errorCheck = 1;
 	cout << "Error: input invalid. Please try again." << endl;
+	print();
       }
     } while(errorCheck == 1);
     
-    countPieces();
 
     while(checkForJump()) {  //while there is a jump available (including double jumps)
 
       /* Implement forced jump code */
 
     }
-    //Next, move a piece as long as there is not a jump you must take
-    
+
+    //Next, move a piece as long as there is not a jump you must take by switching the piece and the blank
+    do {
+      errorCheck2 = 0;  //first make the errorCheck2 false
+      cout << "Choose a square to move to (row column): " << endl;
+      cin >> tempa >> tempb;
+      //cout << "a = " << tempa-1 << endl << "b = " << tempb-1 << endl;
+      if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
+	a = tempa-1;  //subtract one from each to match cooridinates with vector elements
+	b = tempb-1;
+	if(board[a][b].getTeam() == 0) {         //if the space is blank
+	  if(board[x][y].getIsKing() == 1) {   //if the piece is a king
+	    if( (a == x-1 || a == x+1) && (b == y-1 || b == y+1) ) {  //if space is adjacent
+	      holder = board[x][y];           //then execute switch
+	      board[x][y] = board[a][b];
+	      board[a][b] = holder;
+	    }
+	    else {
+	      errorCheck2 = 1;
+	      cout << "Error: Space is not adjacent to piece selected.  Please try again." << endl;
+	      print();
+	    }
+	  }
+	  else {  //else is piece is not a king
+	    if( (a == x-turn) && (b == y-1 || b == y+1) ) {  //if space is on forward diagonal
+	      holder = board[x][y];           //then execute switch
+	      board[x][y] = board[a][b];
+	      board[a][b] = holder;
+	    }
+	    else {
+	      errorCheck2 = 1;
+	      cout << "Error: Space is not adjacent and forward of the selected piece.  Please try again." << endl;
+	      print();
+	    }
+	  }
+	}
+	else {
+	  errorCheck2 = 1;
+	  cout << "Error: space is not empty.  Please try again." << endl;
+	  print();
+	}
+      }
+      else {
+	errorCheck2 = 1;
+	cout << "Error: invalid input.  Please try again." << endl;
+	print();
+      }
+    } while(errorCheck2 == 1);
+
 
     turn *= -1;   //Switch whose turn it is
 
