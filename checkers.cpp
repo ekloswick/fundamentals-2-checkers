@@ -63,11 +63,12 @@ void checkers::play() {
   int winner;          //variable that keeps track of who won once game is over
   int errorCheck = 0;  //variable that checks if piece selection input is valid
   int errorCheck2 = 0; //variable that checks if piece movement input is valid
+  int errorCheck3 = 0;
   int tempx;           //temporarily holds the user input for piece selection
   int tempy;
   int tempa;           //temporarily holds the user input for piece movement
   int tempb;
-  int x;               //holds the actual coordinates of the user input.  (Basically, tempx-1 and tempy-1 since array elements start at 0)
+  int x;               //holds the actual coordinates of the user input.  (Basically, x = tempx-1 and y = tempy-1 since array elements start at 0)
   int y;
   int a;
   int b;
@@ -95,74 +96,144 @@ void checkers::play() {
       if( (tempx >= 1 && tempx <= 8) && (tempy >= 1 && tempy <= 8) ) {
 	x = tempx-1;  //subtract one from each to match cooridinates with vector elements
 	y = tempy-1;	
-	if(board[x][y].getTeam() != turn) {  //If the user inputs a piece that is not his
+	if(checkForJump()) {  //if there is a jump
+	  if(checkPieceJump(x, y) == 0) {  //and the piece selected cannot jump
+	    errorCheck = 1;  //we have a problem
+	    cout << "Error: selected piece cannot jump when a jump exists on the board. Please try again." << endl;
+	  }
+	}	
+	else if( checkPieceMove(x, y) || checkPieceJump(x, y) ) {  //if the selected piece has a legal move
+	  if(board[x][y].getTeam() != turn) {  //If the user inputs a piece that is not his
+	    errorCheck = 1;
+	    cout << "Error: Piece is not yours. Please try again." << endl;
+	    print();
+	  }
+	}
+	else {  //if the selected piece has no legal move
 	  errorCheck = 1;
-	  cout << "Error: Piece is not yours. Please try again." << endl;
+	  cout << "Error: selected piece has no legal moves. Please try again." << endl;
 	  print();
 	}
       }
       else {
-	errorCheck = 1;
-	cout << "Error: input invalid. Please try again." << endl;
-	print();
+        errorCheck = 1;
+        cout << "Error: input invalid. Please try again." << endl;
+        print();
       }
     } while(errorCheck == 1);
     
 
-    while(checkForJump()) {  //while there is a jump available (including double jumps)
-
-      /* Implement forced jump code */
-
-    }
-
-    //Next, move a piece as long as there is not a jump you must take by switching the piece and the blank
-    do {
-      errorCheck2 = 0;  //first make the errorCheck2 false
-      cout << "Choose a square to move to (row column): " << endl;
-      cin >> tempa >> tempb;
-      //cout << "a = " << tempa-1 << endl << "b = " << tempb-1 << endl;
-      if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
-	a = tempa-1;  //subtract one from each to match cooridinates with vector elements
-	b = tempb-1;
-	if(board[a][b].getTeam() == 0) {         //if the space is blank
-	  if(board[x][y].getIsKing() == 1) {   //if the piece is a king
-	    if( (a == x-1 || a == x+1) && (b == y-1 || b == y+1) ) {  //if space is adjacent
-	      holder = board[x][y];           //then execute switch
-	      board[x][y] = board[a][b];
-	      board[a][b] = holder;
+    //After correctly receiving inputs...
+    if(checkForJump()) {
+      while(checkPieceJump(x, y)) {  //while there is a jump available for a piece (which allows for double jumps)
+	//Don't forget to change x and y values when appropriate
+	do {
+	  errorCheck3 = 0;
+	  cout << "Choose a square to jump to (row column): " << endl;
+	  cin >> tempa >> tempb;
+	  if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
+	  a = tempa-1;
+	  b = tempb-1;
+	    if(board[a][b].getTeam() == 0) {                                //if the space is blank
+	      if(board[(a+x)/2][(b+y)/2].getTeam() == -turn) {              //if the space in the middle has an opposing piece
+		if(board[x][y].getIsKing() == 1) {                          //if the piece is a king
+		  if( (a == x-2 || a == x+2) && (b == y-2 || b == y+2) ) {  //if space to jump to is two away
+		    holder = board[x][y];
+		    board[x][y] = board[a][b];
+		    board[a][b] = holder;
+		    board[(a+x)/2][(b+y)/2].setTeam(0);	
+		    x = a;
+		    y = b;
+		  }
+		  else {
+		    errorCheck3 = 1;
+		    cout << "Error: Invalid jump coordiates. Please try again." << endl;
+		  }
+		}
+		else {   //if the piece is NOT a king
+		  if( (a == x-2*turn) && (b == y-2 || b == y+2) ) {  //if space is on forward diagonal		  
+		    holder = board[x][y];
+		    board[x][y] = board[a][b];
+		    board[a][b] = holder;
+		    board[(a+x)/2][(b+y)/2].setTeam(0);
+		    x = a;
+		    y = b;
+		  }
+		  else {
+		    errorCheck3 = 1;
+		    cout << "Error: Invalid jump coordinates. Please try again." << endl;
+		  }
+		}
+	      }
+	      else {
+		errorCheck3 = 1;
+		cout << "Error: No piece is being jumped. Please try again." << endl;
+	      }
 	    }
 	    else {
-	      errorCheck2 = 1;
-	      cout << "Error: Space is not adjacent to piece selected.  Please try again." << endl;
-	      print();
+	      errorCheck3 = 1;
+	      cout << "Error: space is not empty. Please try again." << endl;
+
 	    }
 	  }
-	  else {  //else is piece is not a king
-	    if( (a == x-turn) && (b == y-1 || b == y+1) ) {  //if space is on forward diagonal
-	      holder = board[x][y];           //then execute switch
-	      board[x][y] = board[a][b];
-	      board[a][b] = holder;
+	  else {
+	    errorCheck3 = 1;
+	    cout << "Error: invalid input. Please try again." << endl;
+
+	  }
+
+	  print();
+	  countPieces();
+	} while(errorCheck3 == 1);
+      }
+    }
+    else { //If checkForJump is false... move a piece as long as there is not a jump you must take by switching the piece and the blank
+      do {
+	errorCheck2 = 0;  //first make the errorCheck2 false
+	cout << "Choose a square to move to (row column): " << endl;
+	cin >> tempa >> tempb;
+	if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
+	  a = tempa-1;  //subtract one from each to match cooridinates with vector elements
+	  b = tempb-1;
+	  if(board[a][b].getTeam() == 0) {                              //if the space is blank
+	    if(board[x][y].getIsKing() == 1) {                          //if the piece is a king
+	      if( (a == x-1 || a == x+1) && (b == y-1 || b == y+1) ) {  //if space is adjacent
+		holder = board[x][y];                                   //then execute switch
+		board[x][y] = board[a][b];
+		board[a][b] = holder;
+	      }
+	      else {
+		errorCheck2 = 1;
+		cout << "Error: Space is not adjacent to piece selected.  Please try again." << endl;
+		print();
+	      }
 	    }
-	    else {
-	      errorCheck2 = 1;
-	      cout << "Error: Space is not adjacent and forward of the selected piece.  Please try again." << endl;
-	      print();
+	    else {  //else is piece is not a king
+	      if( (a == x-turn) && (b == y-1 || b == y+1) ) {  //if space is on forward diagonal
+		holder = board[x][y];           //then execute switch
+		board[x][y] = board[a][b];
+		board[a][b] = holder;
+	      }
+	      else {
+		errorCheck2 = 1;
+		cout << "Error: Space is not adjacent and forward of the selected piece.  Please try again." << endl;
+		print();
+	      }
 	    }
+	  }
+	  else {
+	    errorCheck2 = 1;
+	    cout << "Error: space is not empty.  Please try again." << endl;
+	    print();
 	  }
 	}
 	else {
 	  errorCheck2 = 1;
-	  cout << "Error: space is not empty.  Please try again." << endl;
+	  cout << "Error: invalid input.  Please try again." << endl;
 	  print();
 	}
-      }
-      else {
-	errorCheck2 = 1;
-	cout << "Error: invalid input.  Please try again." << endl;
-	print();
-      }
-    } while(errorCheck2 == 1);
-
+      } while(errorCheck2 == 1);
+    }
 
     turn *= -1;   //Switch whose turn it is
 
@@ -205,6 +276,98 @@ void checkers::countPieces() {
   }
   ocount = total;
   cout << "ocount: " << ocount << endl;
+}
+
+int checkers::checkPieceMove(int i, int j) {
+
+  if(board[i][j].getIsNull() == 0) { 
+    if(board[i][j].getTeam() == turn) {   //if team of the piece == turn
+      
+      if(board[i][j].getIsKing() == 1) {  //if the piece is king
+	for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
+	  
+	  if(j-1 >= 0 && (i-k >= 0 && i-k < 8)) {  //use i-k to check both directions for king O's and X's
+	    if(board[i-k][j-1].getTeam() == 0) {   //Check left diagonals
+	      return turn;                         //return true
+	    }
+	  }
+	  if(j+1 < 8 && (i-k >= 0 && i-k < 8)) {
+	    if(board[i-k][j+1].getTeam() == 0) {   //Check right diagonals
+	      return turn;                         //return true
+	    }
+	  }
+	  
+	    }	   
+      }
+      else {  //check the diagonals for blank spaces or jumps
+	if(j-1 >= 0 && (i-turn >= 0 && i-turn < 8)) {
+	  //use j-turn to check correct direction for blanks
+	  if(board[i-turn][j-1].getTeam() == 0) { 
+	    return turn;
+	  }
+	}
+	if(j+1 < 8 && (i-turn >= 0 && i-turn < 8)) {
+	  if(board[i-turn][j+1].getTeam() == 0) {  
+	    return turn;
+	  }
+	}
+      }
+      
+    }
+  }
+
+  return 0;  //if it reaches here, there is no legal move
+}
+
+int checkers::checkPieceJump(int i, int j) {
+
+  if(board[i][j].getIsNull() == 0) {      //if the space is playable
+    if(board[i][j].getTeam() == turn) {   //if team of a piece == turn (the piece belongs to the current player)
+      
+      if(board[i][j].getIsKing() == 1) {  //if the piece is king
+	for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
+	  
+	  if(j-2 >= 0 && (i-k*2 >= 0 && i-k*2 < 8)) {
+	    if(board[i-k*2][j-1].getTeam() == -turn) {  //if there is an opposing piece adjacent to the king
+	      if(board[i-2*k][j-2].getTeam() == 0) {  // and there is a blank space behind it
+		return turn;  //return 1 if x can play, -1 if o can play
+		  }
+	    }
+	  }
+	  if(j+2 < 8 && (i-2*k >= 0 && i-2*k < 8)) { 
+	    //This is edge checking, to make sure there exists a spot on the board j-2*k.
+	    if(board[i-k][j+1].getTeam() == -turn) {  //if there is an opposing piece adjancent to the king
+	      if(board[i-k*2][j+2].getTeam() == 0) {  //and there is a blank space behind it
+		    return turn;  //return 1 if x can play, -1 if o can play
+	      }
+	    }
+	  }
+	  
+	}
+      }
+      else {  //check the forward diagonals for pieces to jump
+	if(j-2 >= 0 && (i-2*turn >= 0 && i-2*turn < 8)) {
+	  //use j-turn to check correct direction for blanks
+	  if(board[i-turn][j-1].getTeam() == -turn) {  //if there is an opposing piece adjacent
+	    if(board[i-2*turn][j-2].getTeam() == 0) {  //and there is a blank space behind it
+	      return turn;  //return 1 if x can play, -1 if o can play
+	    }
+	  }
+	}
+	if(j+2 < 8 && (i-2*turn >= 0 && i-2*turn < 8)) {
+	  if(board[i-turn][j+1].getTeam() == -turn) {  //if there is an opposing piece adjacent
+	    if(board[i-2*turn][j+2].getTeam() == 0) {  //and there is a blank space behind it
+	      return turn;  //return 1 if x can play, -1 if o can play
+	    }
+	  }
+	}
+      }
+      
+    }	
+  }
+  
+  return 0;  // if it reaches here, there is no legal jump for this piece
+  
 }
 
 //returns 1 if x can move, -1 if o can move, and 0 is no moves available
@@ -251,6 +414,7 @@ int checkers::checkForMove() {
     }
   }
 
+  return 0;  //if it reaches here, there is no legal move
 }
 
  
