@@ -31,6 +31,8 @@ checkers::checkers() {
     temp.clear();                 //and clear the temp vector before next iteration
   }
 
+  countPieces();
+
 }
 
 //blank deconstructor
@@ -40,7 +42,7 @@ checkers::~checkers() {
 //prints the current state of the board
 void checkers::print() {
 
-  cout << endl << " ";          //print a blank in upper left corner for alignment
+  cout << endl << " ";    //print a blank in upper left corner for alignment
   for(int k = 0; k < 8; k++) {  //print row of numbers (1-8) at top of board
     cout << " " << k+1;
   }
@@ -58,7 +60,7 @@ void checkers::print() {
 //play checkers!
 void checkers::play() {
   int winner;          //variable that keeps track of who won once game is over
-  int errorCheck = 0;  //variable that ***CRAIG shouldn't this initially be 1 so that the do while loop will start?***
+  int errorCheck = 0;  //variable that 
   int tempx;           //temporarily holds the user input
   int tempy;
   int x;               //holds the actual coordinates of the user input.  (Basically, tempx-1 and tempy-1 since array elements start at 0)
@@ -73,7 +75,6 @@ void checkers::play() {
     //Next, get inputs
     do {  //Use do-while so this happens at least once every turn, and repeats if there is an error in the input
       errorCheck = 0;  //make error false again
-
       if(turn == 1) {
 	cout << "X, input coordinates of the piece you want to move. (row column): ";
       }
@@ -82,12 +83,10 @@ void checkers::play() {
       }
       cin >> tempx >> tempy;  //put the inputs into tempx and tempy
       cout << tempx << endl << tempy << endl;
-
       //big if statement below checks if input is okay, that is, if that digit is between 1 and 8.
       if( (tempx >= 1 && tempx <= 8) && (tempy >= 1 && tempy <= 8) ) {
 	x = tempx-1;  //subtract one from each to match cooridinates with vector elements
-	y = tempy-1;
-	
+	y = tempy-1;	
 	if(board[x][y].getTeam() != turn) {  //If the user inputs a piece that is not his
 	  errorCheck = 1;
 	  cout << "Error: Piece is not yours. Please try again." << endl;
@@ -99,6 +98,7 @@ void checkers::play() {
       }
     } while(errorCheck == 1);
     
+    countPieces();
 
     while(checkForJump()) {  //while there is a jump available (including double jumps)
 
@@ -113,7 +113,6 @@ void checkers::play() {
   } //END OF WHILE LOOP
 
 
-
   if(winner == 1) { //if x wins
     cout << endl << "***** X wins! ******" << endl << endl;
   }
@@ -123,7 +122,84 @@ void checkers::play() {
   cout << "Thank you for playing!" << endl;
 }
 
-//returns 1 if x can move, -1 if o can move, 0 if no moves available for current player
+//count the pieces of each type on the board
+void checkers::countPieces() {
+
+  int total = 0;
+  for(int i = 0; i < 8; i++) {
+    for(int j = 0; j < 8; j++) {
+      if(board[i][j].getIsNull() == 0) {  //if piece is not null
+	if(board[i][j].getTeam() == 1) {  //and piece is an x
+	  total++;                        //increment total
+	}
+      }
+    }
+  }
+  xcount = total;
+  cout << "xcount: " << xcount << endl;
+  total = 0;
+  for(int i = 0; i < 8; i++) {
+    for(int j = 0; j < 8; j++) {
+      if(board[i][j].getIsNull() == 0) {  //if piece is not null
+	if(board[i][j].getTeam() == -1) {  //and piece is an x
+	  total++;                        //increment total
+	}
+      }
+    }
+  }
+  ocount = total;
+  cout << "ocount: " << ocount << endl;
+}
+
+//returns 1 if x can move, -1 if o can move, and 0 is no moves available
+int checkers::checkForMove() {
+
+  //I did below this, but this is merely checking for regular legal moves
+  for(int i = 0; i < 8; i++) {    //column coordinate
+    for(int j = 0; j < 8; j++) {  //row coordinate  (check both ways
+      if(board[i][j].getIsNull() == 0) { 
+	if(board[i][j].getTeam() == turn) {   //if team of the piece == turn
+
+	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
+	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
+
+	      if(j-1 >= 0 && (i-k >= 0 && i-k < 8)) {  //use i-k to check both directions for king O's and X's
+		if(board[i-k][j-1].getTeam() == 0) {   //Check left diagonals
+		  return turn;                         //return true
+		}
+	      }
+	      if(j+1 < 8 && (i-k >= 0 && i-k < 8)) {
+		if(board[i-k][j+1].getTeam() == 0) {   //Check right diagonals
+		  return turn;                         //return true
+		}
+	      }
+
+	    }	   
+	  }
+	  else {  //check the diagonals for blank spaces or jumps
+	    if(j-1 >= 0 && (i-turn >= 0 && i-turn < 8)) {
+	      //use j-turn to check correct direction for blanks
+	      if(board[i-turn][j-1].getTeam() == 0) { 
+		return turn;
+	      }
+	    }
+	    if(j+1 < 8 && (i-turn >= 0 && i-turn < 8)) {
+	      if(board[i-turn][j+1].getTeam() == 0) {  
+		return turn;
+	      }
+	    }
+	  }
+
+	}
+      }
+    }
+  }
+
+}
+
+ 
+
+//returns 1 if x can jump, -1 if o can jump, 0 if no jumps available for current player
 int checkers::checkForJump() {
 
   for(int i = 0; i < 8; i++) {
@@ -134,19 +210,17 @@ int checkers::checkForJump() {
 	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
 	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
 
-	      if(i-2 >= 0 && (j-2*k >= 0 && j-2*k < 8)) {
-	      //use j-k to check correct direction for blanks ***CRAIG what does this mean?***
-		//This is edge checking, to make sure there exists a spot on the board j-2*k.
-		if(board[i-1][j-k].getTeam() == -turn) {  //if there is an opposing piece adjacent to the king
-		  if(board[i-2][j-2*k].getTeam() == 0) {  // and there is a blank space behind it
+	      if(j-2 >= 0 && (i-k*2 >= 0 && i-k*2 < 8)) {
+		if(board[i-k*2][j-1].getTeam() == -turn) {  //if there is an opposing piece adjacent to the king
+		  if(board[i-2*k][j-2].getTeam() == 0) {  // and there is a blank space behind it
 		    return turn;  //return 1 if x can play, -1 if o can play
 		  }
 		}
 	      }
-	      if(i+2 < 8 && (j-2*k >= 0 && j-2*k < 8)) { //***CRAIG what does this mean?***  
+	      if(j+2 < 8 && (i-2*k >= 0 && i-2*k < 8)) { 
 		//This is edge checking, to make sure there exists a spot on the board j-2*k.
-		if(board[i+1][j-k].getTeam() == -turn) {  //if there is an opposing piece adjancent to the king
-		  if(board[i+2][j-2*k].getTeam() == 0) {  //and there is a blank space behind it
+		if(board[i-k][j+1].getTeam() == -turn) {  //if there is an opposing piece adjancent to the king
+		  if(board[i-k*2][j+2].getTeam() == 0) {  //and there is a blank space behind it
 		    return turn;  //return 1 if x can play, -1 if o can play
 		  }
 		}
@@ -154,18 +228,18 @@ int checkers::checkForJump() {
 
 	    }
 	  }
-	  else {  //check the forward diagonals for opposing pieces to jump ***CRAIG if this is for opposing pieces, why don't you return turn*-1 ?
-	    if(i-2 >= 0 && (j-2*turn >= 0 && j-2*turn < 8)) {
+	  else {  //check the forward diagonals for pieces to jump
+	    if(j-2 >= 0 && (i-2*turn >= 0 && i-2*turn < 8)) {
 	      //use j-turn to check correct direction for blanks
-	      if(board[i-1][j-turn].getTeam() == -turn) {  //if there is an opposing piece adjacent
-		if(board[i-2][j-2*turn].getTeam() == 0) {  //and there is a blank space behind it
+	      if(board[i-turn][j-1].getTeam() == -turn) {  //if there is an opposing piece adjacent
+		if(board[i-2*turn][j-2].getTeam() == 0) {  //and there is a blank space behind it
 		  return turn;  //return 1 if x can play, -1 if o can play
 		}
 	      }
 	    }
-	    if(i+2 < 8 && (j-2*turn >= 0 && j-2*turn < 8)) {
-	      if(board[i+1][j-turn].getTeam() == -turn) {  //if there is an opposing piece adjacent
-		if(board[i+2][j-2*turn].getTeam() == 0) {  //and there is a blank space behind it
+	    if(j+2 < 8 && (i-2*turn >= 0 && i-2*turn < 8)) {
+	      if(board[i-turn][j+1].getTeam() == -turn) {  //if there is an opposing piece adjacent
+		if(board[i-2*turn][j+2].getTeam() == 0) {  //and there is a blank space behind it
 		  return turn;  //return 1 if x can play, -1 if o can play
 		}
 	      }
@@ -183,6 +257,8 @@ int checkers::checkForJump() {
 //return 1 if x wins, -1 if o wins, 0 if nobody has won
 int checkers::checkForWin() {
   //First, check whole board for pieces of current player's type
+  cout << "First" << endl;
+
   int count = 0; //counter variable
   for(int i = 0; i < 8; i++) {
     for(int j = 0; j < 8; j++) {
@@ -197,40 +273,14 @@ int checkers::checkForWin() {
     return(-turn);  //Then the opposite team wins!
   }
 
-  //Next, check if there are no legal moves left for the current player ***CRAIG why don't you call check for jump instead?***
-  //I did below this, but this is merely checking for regular legal moves
-  //****We need to add something to check for regular legal moves into check for moves anyways, so you probably won't need this****
-  for(int i = 0; i < 8; i++) {    //column coordinate
-    for(int j = 0; j < 8; j++) {  //row coordinate  (check both ways
-      if(board[i][j].getIsNull() == 0) { 
-	if(board[i][j].getTeam() == turn) {   //if team of the piece == turn
-	  //***CRAIG the code below is confusing. Please clarify***
-	  /*So if the current player has a king, then I immediately return because they will it is extremely likely they will always have a legal move.  I can fix this later if we need to, but for now it ought to be fine. 
-	    Next, if a potential spot a piece can move to exists, and is a blank space, then the piece has a legal move and I return 0*/
-	  
-	  //***I think we should just fix it before we turn it in for sure*****
+  //Next, check if there are no legal moves left for the current player
+  cout << "Before checkForMove" << endl;
 
-	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
-	    return 0;                         //the game is not over
-	  }
-	  else {  //check the diagonals for blank spaces or jumps
-	    if(i-1 >= 0 && (j-turn >= 0 && j-turn < 8)) {
-	      //use j-turn to check correct direction for blanks
-	      if(board[i-1][j-turn].getTeam() == 0) { 
-		return 0;
-	      }
-	    }
-	    if(i+1 < 8 && (j-turn >= 0 && j-turn < 8)) {
-	      if(board[i+1][j-turn].getTeam() == 0) {  
-		return 0;
-	      }
-	    }
-	  }
-
-	}
-      }
-    }
+  if(checkForMove()) {  //If checkFor Move is true
+    return 0;           //There is a legal move: game is not over
   }
+
+  cout << "Before checkForJump" << endl;
 
   if(checkForJump()) {  //if there is a jump available
     return 0;           //The game is not over
