@@ -2,8 +2,10 @@
 #define CHECKERS_H
 
 #include <iostream>
+#include <fstream> //to use file input
 #include <vector>
-#include <cctype>  //to use isdigit in input checking
+#include <string>  
+#include <ctime>
 #include "piece.h"
 
 using namespace std;
@@ -28,12 +30,15 @@ class checkers {
 
  private:
   int turn;            //1 if x's turn, -1 if o's turn
+  int choice;          //Holds the user's game type choice
+  string name;         //Holds the name of the example.txt used to start a game
   int xcount;          //Keeps track of number of x's on board
   int ocount;          //Keeps track of number of o's on board
   int x;               //holds the board coordinates of the user input. 
   int y;
   int a;               //holds the board coordinates of user's move/jump input
   int b;
+  vector<int> moves;        //holds move coordinates from input files
   vector <vector <piece> > board; //Fill a 2D board with type piece
 };
 

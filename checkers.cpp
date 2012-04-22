@@ -32,6 +32,42 @@ checkers::checkers() {
   }
   countPieces();
 
+  do {          //Select game type
+    choice = 0;
+    cout << "Choose one of the following options: " << endl;
+    cout << "1: Human vs. Human game" << endl;
+    cout << "2: AI vs. Human game" << endl;
+    cout << "3: Example game: Enter name of a .txt file to play." << endl;
+    cin >> choice;
+  } while(choice != 1 && choice != 2 && choice != 3 );
+
+  if(choice == 3) {
+    ifstream myfile;     //Holds the actual file.txt
+    cout << "Enter the name of the .txt you wish to play: " << endl;
+    cout << "   Choices are: doublejump.txt, kingme.txt, and victory.txt" << endl;
+    cin >> name;                //takes in file name input
+    myfile.open(name.c_str());  //opens the file
+    if(myfile.is_open()) {      //if the file opens
+      while(myfile.good()) {    //and does not equal EOF
+	int temp;               
+	myfile >> temp;         //read in from the file
+	cout << temp << " ";
+	moves.push_back(temp);  //and push coordinates onto vector moves
+      }
+      moves.pop_back();         //correcting an unknown problem where the last number was pushed on twice when reading the file...
+      myfile.close();           //close file when done
+    }
+    else {                      //if file is not open
+      cout << "ERROR: File failed to open" << endl;
+      choice = 1;               //print error and make game human vs. human
+    }
+    cout << endl;
+    for(int i = 0; i < moves.size(); i++) {
+      cout << moves[i] << " ";
+    }
+  }
+
+
 }
 
 //blank deconstructor
@@ -56,38 +92,26 @@ void checkers::print() {
 
 }
 
+
 //play checkers!
 void checkers::play() {
   int winner;          //variable that keeps track of who won once game is over
-
   cout << endl << endl << "***** Welcome to Checkers ******" << endl << endl;
-
+ 
   while( (winner = checkForWin()) == 0 ) { //while nobody has won yet
-
     print(); //First, print the board
     countPieces();  //Then count the pieces of each type.
-
-    //Next, get inputs
     getInput();
-
-    //After correctly receiving inputs...
     if(checkForJump()) {
       while(checkPieceJump(x, y)) {  //while there is a jump available for a piece (which allows for double jumps)
-
 	executeJump();
-
       }
     }
-    else { //If checkForJump is false... move a piece as long as there is not a jump you must take by switching the piece and the blank
-
+    else { //If checkForJump is false... move a piece by switching the piece and the blank
       executeMove();
-
-    }
-    
+    }  
     turn *= -1;   //Switch whose turn it is
-
   } //END OF WHILE LOOP
-
 
   if(winner == 1) { //if x wins
     cout << endl << "***** X wins! ******" << endl << endl;
@@ -97,6 +121,7 @@ void checkers::play() {
   }
   cout << "Thank you for playing!" << endl;
 }
+
 
 //count the pieces of each type on the board
 void checkers::countPieces() {
@@ -140,15 +165,26 @@ void checkers::getInput() {
     else {
       cout << "O, input coordinates of the piece you want to move. (row column): ";
     }
-    cin >> tempx >> tempy;  //put the inputs into tempx and tempy
-    //cout << "x = " << tempx-1 << endl << "y = " << tempy-1 << endl;
-    //big if statement below checks if input is okay, that is, if that digit is between 1 and 8.
+    if(choice == 1 || (choice == 2 /*&& turn == 1*/)) { //remove later 
+      cin >> tempx >> tempy;  //put the inputs into tempx and tempy
+    }
+    else if(choice == 3) {
+      sleep(1);          //wait for one second before executing the move
+      tempx = moves[0];  //put the first move coordinates into tempx and tempy
+      tempy = moves[1];
+      moves.erase(moves.begin()); //then pop then off moves
+      moves.erase(moves.begin());
+    }
+    else {
+      // Make the computer select a piece to move
+    }
+    
     if( (tempx >= 1 && tempx <= 8) && (tempy >= 1 && tempy <= 8) ) {
       x = tempx-1;  //subtract one from each to match cooridinates with vector elements
       y = tempy-1;	
-      if(checkForJump()) {  //if there is a jump
+      if(checkForJump()) {               //if there is a jump
 	if(checkPieceJump(x, y) == 0) {  //and the piece selected cannot jump
-	  errorCheck = 1;  //we have a problem
+	  errorCheck = 1;                //we have a problem
 	  cout << "Error: selected piece cannot jump when a jump exists on the board. Please try again." << endl;
 	}
       }	
@@ -183,7 +219,21 @@ void checkers::executeMove() {
   do {
     errorCheck2 = 0;  //first make the errorCheck2 false
     cout << "Choose a square to move to (row column): " << endl;
-    cin >> tempa >> tempb;
+    if(choice == 1 || (choice == 2 /*&& turn == 1 */)) { //remove later
+      cin >> tempa >> tempb;
+    }
+    else if(choice == 3) {
+      tempa = moves[0];  //put moves coordinates into tempa and tempb
+      tempb = moves[1];
+      moves.erase(moves.begin()); //pop those coordinates off moves
+      moves.erase(moves.begin());
+      if(moves.empty()) {  //if there are no more moves
+	choice = 1;        //change the game type to human vs human
+      }
+    }
+    else {
+      //At in AIMove() later
+    }
     if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
       a = tempa-1;  //subtract one from each to match cooridinates with vector elements
       b = tempb-1;
@@ -237,7 +287,21 @@ void checkers::executeJump() {
   do {
     errorCheck3 = 0;
     cout << "Choose a square to jump to (row column): " << endl;
-    cin >> tempa >> tempb;
+    if(choice == 1 || (choice == 2 /*&& turn == 1 */)) { //remove later
+      cin >> tempa >> tempb;
+    }
+    else if(choice == 3) {
+      tempa = moves[0];  //put moves coordinates into tempa and tempb
+      tempb = moves[1];
+      moves.erase(moves.begin()); //pop those coordinates off moves
+      moves.erase(moves.begin());
+      if(moves.empty()) {  //if there are no more moves
+	choice = 1;        //change the game type to human vs human
+      }
+    }
+    else {
+      //At in AIJump() later
+    }
     if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
       a = tempa-1;
       b = tempb-1;
