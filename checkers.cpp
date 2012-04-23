@@ -370,7 +370,7 @@ void checkers::makeKing() {
       board[0][i].setIsKing(1);
     }
     if(board[7][i].getTeam() == -1) {
-      board[7][i].setIsKing(-11);
+      board[7][i].setIsKing(-1);
     }
   }
 
