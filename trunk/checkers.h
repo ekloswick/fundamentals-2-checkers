@@ -17,13 +17,13 @@ class checkers {
   void print();                      //prints the current state of the board
   void play();                       //play checkers!
   void countPieces();                //counts the number of x's and o's
-  void getInput();                   //receives input from player
+  void getInput();                   //receives input from player or example text until they choose a good move
   void executeMove();                //executes move in play function
   void executeJump();                //executes jump in play function
   void makeKing();                   //finds pieces in back row and kings them
-  int checkPieceMove(int i, int j);  //returns true if the piece associated with board[m][n] has a move, false if not
-  int checkPieceJump(int i, int j);  //returns true if the piece associated with board[m][n] has a jump, false if not
-  int checkForMove();                //returns 1 if x can move, -1 if o can move, 0 if no moves available for current player
+  int checkPieceMove(int i, int j);  //returns turn if the piece associated with board[m][n] has a move, false if not
+  int checkPieceJump(int i, int j);  //returns turn if the piece associated with board[m][n] has a jump, false if not
+  int checkForMove();                //returns 1 if x can move, -1 if o can move, 0 if no moves available for current player on entire board
   int checkForJump();                //returns 1 if x can jump, -1 if o can jump, 0 if no jumps available for current player
   int checkForWin();                 //returns 1 if x wins, -1 if o wins, 0 if nobody has won
   
@@ -34,7 +34,7 @@ class checkers {
   string name;         //Holds the name of the example.txt used to start a game
   int xcount;          //Keeps track of number of x's on board
   int ocount;          //Keeps track of number of o's on board
-  int x;               //holds the board coordinates of the user input. 
+  int x;               //holds the board coordinates of the user input 
   int y;
   int a;               //holds the board coordinates of user's move/jump input
   int b;
