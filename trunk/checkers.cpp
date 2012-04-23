@@ -429,8 +429,8 @@ int checkers::checkPieceJump(int i, int j) {
 	for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
 	  
 	  if(j-2 >= 0 && (i-k*2 >= 0 && i-k*2 < 8)) {   //if the jump spot is on the board to the left of the king
-	    if(board[i-k*2][j-1].getTeam() == -turn) {  //and if there is an opposing piece adjacent to the king
-	      if(board[i-2*k][j-2].getTeam() == 0) {    //and there is a blank space behind it
+	    if(board[i-k][j-1].getTeam() == -turn) {  //and if there is an opposing piece adjacent to the king 
+	      if(board[i-2*k][j-2].getTeam() == 0) {    //and there is a blank space behind it 
 		return turn;  //return 1 if x can play, -1 if o can play
 	      }
 	    }
