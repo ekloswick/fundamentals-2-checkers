@@ -475,123 +475,25 @@ int checkers::checkForMove() {
 
   for(int i = 0; i < 8; i++) {    //column coordinate
     for(int j = 0; j < 8; j++) {  //row coordinate  (check both ways)
-      if (checkPieceMove(i,j) == turn ) {
-	return checkPieceMove(i,j);
+      if (checkPieceMove(i,j) == turn ) {  //if the current player has a move available
+	return checkPieceMove(i,j);        //return the turn of the current player
       }
     }
   }
-  return 0; //if there are no moves left for that turn
-
-      //}
-      //}
-      /*
-      if(board[i][j].getIsNull() == 0) {      //if the piece is not a null
-	if(board[i][j].getTeam() == turn) {   //if team of the piece == turn
-
-	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
-	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
-
-	      if(j-1 >= 0 && (i-k >= 0 && i-k < 8)) {  //use i-k to check both directions for king O's and X's
-		if(board[i-k][j-1].getTeam() == 0) {   //Check left diagonals
-		  return turn;                         //return turn
-		}
-	      }
-	      if(j+1 < 8 && (i-k >= 0 && i-k < 8)) {
-		if(board[i-k][j+1].getTeam() == 0) {   //Check right diagonals
-		  return turn;                         //return turn
-		}
-	      }
-
-	    }	   
-	  }
-	  else {  //check the diagonals for blank spaces or jumps
-	    if(j-1 >= 0 && (i-turn >= 0 && i-turn < 8)) {
-	      //use j-turn to check correct direction for blanks
-	      if(board[i-turn][j-1].getTeam() == 0) { 
-		return turn;
-	      }
-	    }
-	    if(j+1 < 8 && (i-turn >= 0 && i-turn < 8)) {
-	      if(board[i-turn][j+1].getTeam() == 0) {  
-		return turn;
-	      }
-	    }
-	  }
-
-	}
-      }
-    }
-  }
-
-  return 0;  //if it reaches here, there is no legal move
-      */
+  return 0; 
 }
 
 //returns 1 if x can jump, -1 if o can jump, 0 if no jumps available for current player
 int checkers::checkForJump() {
 
   for(int i = 0; i < 8; i++) {
-    for(int j = 0; j < 8; j++) {              //check the whole board
-      if (checkPieceJump(i,j) == turn ) {
-	return checkPieceJump(i,j);
+    for(int j = 0; j < 8; j++) {           //check the whole board
+      if (checkPieceJump(i,j) == turn ) {  //if the current player has a jump available
+	return checkPieceJump(i,j);        //return the turn of the current player
       }
     }
   }
-  return 0; //if there are no moves left for that turn
-
-      //checkPieceJump(i,j);
-      //}
-      //}
-      /*
-      if(board[i][j].getIsNull() == 0) {      //if the space is playable
-	if(board[i][j].getTeam() == turn) {   //if team of a piece == turn (the piece belongs to the current player)
-
-	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
-	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
-
-	      if(j-2 >= 0 && (i-k*2 >= 0 && i-k*2 < 8)) {
-		if(board[i-k*2][j-1].getTeam() == -turn) {  //if there is an opposing piece adjacent to the king
-		  if(board[i-2*k][j-2].getTeam() == 0) {  // and there is a blank space behind it
-		    return turn;  //return 1 if x can play, -1 if o can play
-		  }
-		}
-	      }
-	      if(j+2 < 8 && (i-2*k >= 0 && i-2*k < 8)) { 
-		//This is edge checking, to make sure there exists a spot on the board j-2*k.
-		if(board[i-k][j+1].getTeam() == -turn) {  //if there is an opposing piece adjancent to the king
-		  if(board[i-k*2][j+2].getTeam() == 0) {  //and there is a blank space behind it
-		    return turn;  //return 1 if x can play, -1 if o can play
-		  }
-		}
-	      }
-
-	    }
-	  }
-	  else {  //check the forward diagonals for pieces to jump
-	    if(j-2 >= 0 && (i-2*turn >= 0 && i-2*turn < 8)) {
-	      //use j-turn to check correct direction for blanks
-	      if(board[i-turn][j-1].getTeam() == -turn) {  //if there is an opposing piece adjacent
-		if(board[i-2*turn][j-2].getTeam() == 0) {  //and there is a blank space behind it
-		  return turn;  //return 1 if x can play, -1 if o can play
-		}
-	      }
-	    }
-	    if(j+2 < 8 && (i-2*turn >= 0 && i-2*turn < 8)) {
-	      if(board[i-turn][j+1].getTeam() == -turn) {  //if there is an opposing piece adjacent
-		if(board[i-2*turn][j+2].getTeam() == 0) {  //and there is a blank space behind it
-		  return turn;  //return 1 if x can play, -1 if o can play
-		}
-	      }
-	    }
-	  }
-
-	}	
-      }
-    }
-  }
-
-  return 0; //if current player has no moves, return 0
-      */
+  return 0; //if the current player has no moves on the board, return 0
 }
 
 //return 1 if x wins, -1 if o wins, 0 if nobody has won
