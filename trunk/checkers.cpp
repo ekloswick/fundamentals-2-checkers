@@ -3,6 +3,10 @@
 
 //constructor
 checkers::checkers() {
+
+  //seed random numbers
+  srand(time(0));
+
   //initializes turn to 1 (player x starts)
   turn = 1;
 
@@ -67,7 +71,6 @@ checkers::checkers() {
     }
   }
 
-
 }
 
 //blank deconstructor
@@ -92,7 +95,6 @@ void checkers::print() {
 
 }
 
-
 //play checkers!
 void checkers::play() {
   int winner;          //variable that keeps track of who won once game is over
@@ -110,7 +112,7 @@ void checkers::play() {
     else { //If checkForJump is false (there are no jumps on the board), move a piece by switching the piece and the blank
       executeMove(); //make the move
     }  
-    turn *= -1;   //Switch whose turn it is
+    turn *= -1;   //Switch whose turn it is once their turn ends
   } //END OF WHILE LOOP
 
   if(winner == 1) { //if x wins
@@ -166,7 +168,8 @@ void checkers::getInput() {
     else {
       cout << "O, input coordinates of the piece you want to move. (row column): ";
     }
-    if(choice == 1 || (choice == 2 /*&& turn == 1*/)) { //debugging remove later //for user-user game or computer-user game
+
+    if(choice == 1 || (choice == 2 && turn == 1)) { //for user-user game or computer-user game when it's the user's turn
       cin >> tempx >> tempy;  //put the inputs into tempx and tempy
     }
     else if(choice == 3) { //for example game
@@ -176,14 +179,18 @@ void checkers::getInput() {
       moves.erase(moves.begin()); //then pop them off moves
       moves.erase(moves.begin());
     }
-    else {
-      // Make the computer select a piece to move
+    else if(choice == 2 && turn == -1) { //for an AI game when it's the AI's turn
+      sleep(1);
+      fill_AI_vars();
+      tempx = AI_move[0]+1;
+      tempy = AI_move[1]+1;
     }
+
     //the following loop checks for possible bad inputs from the user, i.e. choosing a bad location, choosing not to jump when a jump was available, choosing a piece with no legal moves, or choosing the other player's piece
     if( (tempx >= 1 && tempx <= 8) && (tempy >= 1 && tempy <= 8) ) { //if the user chose a piece on the board
       x = tempx-1;  //subtract one from each to match coordinates with vector elements
       y = tempy-1;	
-      if(checkForJump()!=0) {               //if there is a jump
+      if(checkForJump()!=0) {            //if there is a jump
 	if(checkPieceJump(x, y) == 0) {  //and the piece selected cannot jump
 	  errorCheck = 1;                //we have a problem
 	  cout << "Error: selected piece cannot jump when a jump exists on the board. Please try again." << endl;
@@ -195,19 +202,19 @@ void checkers::getInput() {
 	  cout << "Error: Piece is not yours. Please try again." << endl;
 	  print();
 	}
-	}
+      }
       else {  //if the selected piece has no legal move
 	errorCheck = 1; //we have a problem
 	cout << "Error: selected piece has no legal moves. Please try again." << endl;
 	print();
-	}
+      }
     }
     else { //if the user chose a bad location
       errorCheck = 1; //we have a problem
       cout << "Error: input invalid. Please try again." << endl;
       print();
     }
-  } while(errorCheck == 1); //exits once the loop completes without finding an error
+  } while(errorCheck == 1); //makes move once the loop completes without finding an error
 
 }
 
@@ -221,7 +228,7 @@ void checkers::executeMove() {
   do {
     errorCheck2 = 0;  //first make the errorCheck2 false
     cout << "Choose a square to move to (row column): " << endl;
-    if(choice == 1 || (choice == 2 /*&& turn == 1 */)) { //remove later debugging //for user-user and user-computer games
+    if(choice == 1 || (choice == 2 && turn == 1 )) { //for user-user and user-computer games when it's the user's turn
       cin >> tempa >> tempb;
     }
     else if(choice == 3) { //for example game
@@ -233,8 +240,9 @@ void checkers::executeMove() {
 	choice = 1;        //change the game type to human vs human
       }
     }
-    else {
-      //At in AIMove() later
+    else if (choice == 2 && turn == -1) { //for an AI game when it's the AI's turn
+      tempa = AI_move[2]+1;
+      tempb = AI_move[3]+1;
     }
     if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) { //if the chosen move is on the board
       a = tempa-1;  //subtract one from each to match cooridinates with vector elements
@@ -291,10 +299,10 @@ void checkers::executeJump() {
   do {
     errorCheck3 = 0;
     cout << "Choose a square to jump to (row column): " << endl;
-    if(choice == 1 || (choice == 2 /*&& turn == 1 */)) { //remove later
+    if(choice == 1 || (choice == 2 && turn == 1)) {
       cin >> tempa >> tempb;
     }
-    else if(choice == 3) {
+    else if (choice == 3) {
       tempa = moves[0];  //put moves coordinates into tempa and tempb
       tempb = moves[1];
       moves.erase(moves.begin()); //pop those coordinates off moves
@@ -303,9 +311,11 @@ void checkers::executeJump() {
 	choice = 1;        //change the game type to human vs human
       }
     }
-    else {
-      //At in AIJump() later
+    else if (choice == 2 && turn == -1){ //for AI game when it's the AI's turn
+      tempa = AI_move[2]+1;
+      tempb = AI_move[3]+1;
     }
+
     if( (tempa >= 1 && tempa <= 8) && (tempb >= 1 && tempb <= 8) ) {
       a = tempa-1;
       b = tempb-1;
@@ -320,6 +330,7 @@ void checkers::executeJump() {
 	      x = a;
 	      y = b;
 	      makeKing(); //make pieces kings if needed
+	      AI_next_jump(x,y);
 	    }
 	    else {
 	      errorCheck3 = 1;
@@ -350,6 +361,7 @@ void checkers::executeJump() {
       else {
 	errorCheck3 = 1;
 	cout << "Error: space is not empty. Please try again." << endl;	
+	cout << "you are trying to move to space " << a << " " << b << " from " << x << " " << y << endl;
       }
     }
     else {
@@ -374,6 +386,257 @@ void checkers::makeKing() {
     }
   }
 
+}
+
+void checkers::AI_next_jump(int i, int j) { //ERROR for some reason this function is never getting called
+
+  vector <int> temp;  //holding vector
+  AI_move.clear();    //clear everything to be safe
+  AI_possible_moves.clear();
+  temp.clear();
+  
+  cout << endl; //debugging formatting
+  
+  if(board[i][j].getIsNull() == 0) {
+    if(board[i][j].getTeam() == -1) {
+      
+      if(board[i][j].getIsKing() == 1) {  //if the piece is king
+	for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
+	  
+	  if(j-2 >= 0 && (i-k*2 >= 0 && i-k*2 < 8)) {   //if the jump spot is on the board to the left of the king
+	    if(board[i-k][j-1].getTeam() == 1) {    //and if there is an opposing piece adjacent to the king 
+	      cout << "found an adjacent piece at "<< i-k << " " << j-1 << endl;
+	      if(board[i-2*k][j-2].getTeam() == 0) {    //and there is a blank space behind it 
+		cout << "found jump from " << i << " " << j << " to " << i-2*k << " " << j-2 << endl;
+		temp.clear();
+		temp.push_back(i);
+		temp.push_back(j);
+		temp.push_back(i-2*k);
+		temp.push_back(j-2);
+		AI_possible_moves.push_back(temp);
+	      }
+	    }
+	  }
+	  if(j+2 < 8 && (i-2*k >= 0 && i-2*k < 8)) {    //if the jump spot is on the board to the right of the king
+	    if(board[i-k][j+1].getTeam() == 1) {  //and if there is an opposing piece adjancent to the king 
+	      cout << "found a jump over " << i-k << " " << j+1 << endl;
+	      if(board[i-k*2][j+2].getTeam() == 0) {    //and there is a blank space behind it
+		cout << "found jump from " << i << " " << j << " to " << i-2*k << " " << j+2 << endl;
+		temp.clear();
+		temp.push_back(i);
+		temp.push_back(j);
+		temp.push_back(i-2*k);
+		temp.push_back(j+2);
+		AI_possible_moves.push_back(temp);
+	      }
+	    }
+	  }
+	  
+	}
+      }
+      else {  //if the piece isn't a king, check the forward diagonals for pieces to jump
+	if(j+2 < 8 && (i+2 >= 0 && i+2 < 8)) {	
+	  if(board[i+1][j+1].getTeam() == 1) {  //if turn == -1 (team o) and if there is an opposing piece adjacent
+	    if(board[i+2][j+2].getTeam() == 0) {  //and there is a blank space behind it
+	      cout << "found jump from " << i << " " << j << " to " << i+2 << " " << j+2 << endl;
+	      temp.clear();
+	      temp.push_back(i);
+	      temp.push_back(j);
+	      temp.push_back(i+2);
+	      temp.push_back(j+2);
+	      AI_possible_moves.push_back(temp);
+	    }
+	  }
+	}
+	if(j-2 >= 0 && (i+2 >= 0 && i+2 < 8)) { 	  
+	  if(board[i+1][j-1].getTeam() == 1) {
+	    if(board[i+2][j-2].getTeam() == 0) {
+	      cout << "found jump from " << i << " " << j << " to " << i+2 << " " << j-2 << endl;
+	      temp.clear();
+	      temp.push_back(i);
+	      temp.push_back(j);
+	      temp.push_back(i+2);
+	      temp.push_back(j-2);
+	      AI_possible_moves.push_back(temp);
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  if (!AI_possible_moves.empty()) {
+    cout << "the number of possible jumps is " << AI_possible_moves.size() << endl;
+    int random = ((double)rand()/(double)RAND_MAX) * (AI_possible_moves.size());
+    AI_move = AI_possible_moves[random];
+    return;
+  }
+
+  sleep(5);
+
+}
+
+void checkers::fill_AI_vars() {
+
+  vector <int> temp;    //holding vector
+  AI_possible_moves.clear(); //clear everything to be safe
+  AI_move.clear();
+  temp.clear();
+
+  cout << endl; //debugging formatting
+
+  for (int i = 0; i < 8; i++) {   //check the whole board
+    for(int j = 0; j < 8; j++) {
+      if(board[i][j].getIsNull() == 0) {
+	if (checkPieceJump(i,j) == -1) { //if a spot is found where the AI has a jump
+	  
+	  cout << "found a jump for AI!" << endl;
+
+	  if(board[i][j].getIsKing() == 1) {  //if the piece is king
+	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for jumps)
+	      
+	      if(j-2 >= 0 && (i-k*2 >= 0 && i-k*2 < 8)) {   //if the jump spot is on the board to the left of the king
+		if(board[i-k][j-1].getTeam() == 1) {    //and if there is an opposing piece adjacent to the king 
+		  if(board[i-2*k][j-2].getTeam() == 0) {    //and there is a blank space behind it 
+		    cout << "found jump from " << i << " " << j << " to " << i-2*k << " " << j-2 << endl;
+		    temp.clear();
+		    temp.push_back(i);
+		    temp.push_back(j);
+		    temp.push_back(i-2*k);
+		    temp.push_back(j-2);
+		    AI_possible_moves.push_back(temp);
+		  }
+		}
+	      }
+	      if(j+2 < 8 && (i-2*k >= 0 && i-2*k < 8)) {    //if the jump spot is on the board to the right of the king
+		if(board[i-k][j+1].getTeam() == 1) {  //and if there is an opposing piece adjancent to the king 
+		  if(board[i-k*2][j+2].getTeam() == 0) {    //and there is a blank space behind it
+		    cout << "found jump from " << i << " " << j << " to " << i-2*k << " " << j+2 << endl;
+		    temp.clear();
+		    temp.push_back(i);
+		    temp.push_back(j);
+		    temp.push_back(i-2*k);
+		    temp.push_back(j+2);
+		    AI_possible_moves.push_back(temp);
+		  }
+		}
+	      }
+	      
+	    }
+	  }
+	  else {  //if the piece isn't a king, check the forward diagonals for pieces to jump
+	    
+	    if(j+2 < 8 && (i+2 >= 0 && i+2 < 8)) {   
+	      if(board[i+1][j+1].getTeam() == 1) {  //if turn == -1 (team o) and if there is an opposing piece adjacent
+		if(board[i+2][j+2].getTeam() == 0) {  //and there is a blank space behind it
+		  cout << "found jump from " << i << " " << j << " to " << i+2 << " " << j+2 << endl;
+		  temp.clear();
+		  temp.push_back(i);
+		  temp.push_back(j);
+		  temp.push_back(i+2);
+		  temp.push_back(j+2);
+		  AI_possible_moves.push_back(temp);
+		}
+	      }
+	    }
+	    if(j-2 >= 0 && (i+2 >= 0 && i+2 < 8)) {
+	      if(board[i+1][j-1].getTeam() == 1) {
+		if(board[i+2][j-2].getTeam() == 0) {
+		  cout << "found jump from " << i << " " << j << " to " << i+2 << " " << j-2 << endl;
+		  temp.clear();
+		  temp.push_back(i);
+		  temp.push_back(j);
+		  temp.push_back(i+2);
+		  temp.push_back(j-2);
+		  AI_possible_moves.push_back(temp);
+		}
+	      }
+	    } 
+	   
+	  }
+	    
+	}
+      }
+    }
+  }
+
+  
+  if (!AI_possible_moves.empty()) {
+    cout << "the number of possible jumps is " << AI_possible_moves.size() << endl;
+    int random = ((double)rand()/(double)RAND_MAX) * (AI_possible_moves.size());
+    AI_move = AI_possible_moves[random];
+    return;
+  }
+  
+  for(int i = 0; i < 8; i++) {
+    for(int j = 0; j < 8; j++) {
+      if(board[i][j].getIsNull() == 0) {      //if the location is not a null
+	if(board[i][j].getTeam() == -1) {   //and if team of the piece == turn
+	  if(board[i][j].getIsKing() == 1) {  //and if the piece is king
+	    
+	    for(int k = -1; k < 2; k=k+2) {   //Want values of -1 and 1 only (check behind and in front of the king for moves)	  
+	      if(j-1 >= 0 && (i-k >= 0 && i-k < 8)) {  //use j-1 to check left of the king and use i-k to check both directions for king O's and X's
+		if(board[i-k][j-1].getTeam() == 0) {   //Check left diagonals for null spots 
+		  temp.clear();
+		  cout << "found move from " << i << " " << j << " to " << i-k << " " << j-1 << endl;
+		  temp.push_back(i);
+		  temp.push_back(j);
+		  temp.push_back(i-k);
+		  temp.push_back(j-1);
+		  AI_possible_moves.push_back(temp);
+		}
+	      }
+	      if(j+1 < 8 && (i-k >= 0 && i-k < 8)) {   //use j+1 to check right of the king and use i-k to check both directions for king O's and X's
+		if(board[i-k][j+1].getTeam() == 0) {   //Check right diagonals for null spots 
+		  temp.clear();
+		  cout << "found move from " << i << " " << j << " to " << i-k << " " << j+1 << endl;
+		  temp.push_back(i);
+		  temp.push_back(j);
+		  temp.push_back(i-k);
+		  temp.push_back(j+1);
+		  AI_possible_moves.push_back(temp);
+		}
+	      }
+	    }
+	    
+	  }
+	  
+	  else {  //if the piece is not a king, check the diagonals for blank spaces
+	    //use (j-turn) to check correct direction for blanks depending on team
+	    if(j-1 >= 0 && (i+1 >= 0 && i+1 < 8)) { //for turn == -1 (team o)
+	      if(board[i+1][j-1].getTeam() == 0) { //if there is a null spot available for move
+		temp.clear();
+		cout << "found move from " << i << " " << j << " to " << i+1 << " " << j-1 << endl;
+		temp.push_back(i);
+		temp.push_back(j);
+		temp.push_back(i+1);
+		temp.push_back(j-1);
+		AI_possible_moves.push_back(temp);
+	      }
+	    }
+	    if(j+1 < 8 && (i+1 >= 0 && i+1 < 8)) { //for turn == 1 (team x)
+	      if(board[i+1][j+1].getTeam() == 0) {  //if there is a null spot available for move
+		temp.clear();
+		cout << "found move from " << i << " " << j << " to " << i+1 << " " << j+1 << endl;
+		temp.push_back(i);
+		temp.push_back(j);
+		temp.push_back(i+1);
+		temp.push_back(j+1);
+		AI_possible_moves.push_back(temp);
+	      }
+	    }
+	  }
+	  
+	}
+      }
+    }
+  }
+  
+  cout << "the number of possible moves is " << AI_possible_moves.size() << endl;
+  int random = ((double)rand()/(double)RAND_MAX) * (AI_possible_moves.size());
+  AI_move = AI_possible_moves[random];
+  return;
+  
 }
 
 //returns turn if the piece associated with board[m][n] has a move, false if not
@@ -436,7 +699,7 @@ int checkers::checkPieceJump(int i, int j) {
 	    }
 	  }
 	  if(j+2 < 8 && (i-2*k >= 0 && i-2*k < 8)) {    //if the jump spot is on the board to the right of the king
-	    if(board[i-k*2][j+1].getTeam() == -turn) {  //and if there is an opposing piece adjancent to the king //CRAIG there was no *2 on the k for this, so i added it
+	    if(board[i-k][j+1].getTeam() == -turn) {  //and if there is an opposing piece adjancent to the king 
 	      if(board[i-k*2][j+2].getTeam() == 0) {    //and there is a blank space behind it
 		    return turn;  //return 1 if x can play, -1 if o can play
 	      }
@@ -467,7 +730,7 @@ int checkers::checkPieceJump(int i, int j) {
   }
   
   return 0;  // if it reaches here, there is no legal jump for this piece
-      
+  
 }
 
 //returns 1 if x can move, -1 if o can move, and 0 is no moves available for current player on entire board
@@ -522,12 +785,12 @@ int checkers::checkForWin() {
     return 0;           //There is a legal move: game is not over
   }
 
-  cout << "Before checkForJump" << endl;
+  cout << "Before checkForJump" << endl;  //debugging
 
   if(checkForJump()!=0) {  //if there is a jump available for the current player
     return 0;           //The game is not over
   }
 
   //If it reaches this point, current player had no legal moves available, so the opposite team wins 
-  return -turn;
+  return (-turn);
 }
