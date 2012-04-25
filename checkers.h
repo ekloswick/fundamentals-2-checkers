@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>  
 #include <ctime>
+#include <cstdlib>
+#include <time.h>
 #include "piece.h"
 
 using namespace std;
@@ -21,6 +23,8 @@ class checkers {
   void executeMove();                //executes move in play function
   void executeJump();                //executes jump in play function
   void makeKing();                   //finds pieces in back row and kings them
+  void fill_AI_vars();               //fills AI_possible_moves and AI_move for a given turn
+  void AI_next_jump(int i ,int j);        //if the AI reaches a double jump, use this to fill in the next jump
   int checkPieceMove(int i, int j);  //returns turn if the piece associated with board[m][n] has a move, false if not
   int checkPieceJump(int i, int j);  //returns turn if the piece associated with board[m][n] has a jump, false if not
   int checkForMove();                //returns 1 if x can move, -1 if o can move, 0 if no moves available for current player on entire board
@@ -40,6 +44,8 @@ class checkers {
   int b;
   vector<int> moves;        //holds move coordinates from input files
   vector <vector <piece> > board; //Fill a 2D board with type piece
+  vector <vector <int> > AI_possible_moves; //2D vector containing possible moves for the AI
+  vector <int> AI_move; //vector containing the 4 coordinates describing the chosen move
 };
 
 #endif
