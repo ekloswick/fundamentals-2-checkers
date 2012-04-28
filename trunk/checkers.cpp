@@ -66,7 +66,7 @@ checkers::checkers() {
       choice = 1;               //print error and make game human vs. human
     }
     cout << endl;
-    for(int i = 0; i < moves.size(); i++) { //debugging
+    for(unsigned int i = 0; i < moves.size(); i++) { //debugging
       cout << moves[i] << " ";
     }
   }
@@ -122,6 +122,7 @@ void checkers::play() {
     cout << endl << "***** O wins! ******" << endl << endl;
   }
   cout << "Thank you for playing!" << endl;
+  board.clear();
 }
 
 
@@ -162,18 +163,17 @@ void checkers::getInput() {
 
   do {  //Use do-while so this happens at least once every turn, and repeats if there is an error in the input
     errorCheck = 0;  //initially make error false again
-    if(turn == 1) {  //depending on whose turn it is, ask for input
-      cout << "X, input coordinates of the piece you want to move. (row column): ";
-    }
-    else {
-      cout << "O, input coordinates of the piece you want to move. (row column): ";
-    }
-
-    if(choice == 1 || (choice == 2 && turn == 1)) { //for user-user game or computer-user game when it's the user's turn
+    if(choice == 1 || (choice == 2 && turn == 1)) {
+      if(turn == 1) {  //depending on whose turn it is, ask for input
+	cout << "X, input coordinates of the piece you want to move. (row column): ";
+      }
+      else {
+	cout << "O, input coordinates of the piece you want to move. (row column): ";
+      } //for user-user game or computer-user game when it's the user's turn
       cin >> tempx >> tempy;  //put the inputs into tempx and tempy
     }
     else if(choice == 3) { //for example game
-      sleep(1);            //wait for one second before executing the move
+      //sleep(1);            //wait for one second before executing the move  //debugging
       tempx = moves[0];    //put the first move coordinates into tempx and tempy
       tempy = moves[1];
       moves.erase(moves.begin()); //then pop them off moves
@@ -227,11 +227,12 @@ void checkers::executeMove() {
 
   do {
     errorCheck2 = 0;  //first make the errorCheck2 false
-    cout << "Choose a square to move to (row column): " << endl;
-    if(choice == 1 || (choice == 2 && turn == 1 )) { //for user-user and user-computer games when it's the user's turn
+    if(choice == 1 || (choice == 2 && turn == 1)) {
+      cout << "Choose a square to move to (row column): "; //for user-user and user-computer games when it's the user's turn
       cin >> tempa >> tempb;
     }
     else if(choice == 3) { //for example game
+      sleep(1);            //wait for one second before executing the move
       tempa = moves[0];  //put moves coordinates into tempa and tempb
       tempb = moves[1];
       moves.erase(moves.begin()); //pop those coordinates off moves
@@ -298,11 +299,12 @@ void checkers::executeJump() {
 
   do {
     errorCheck3 = 0;
-    cout << "Choose a square to jump to (row column): " << endl;
     if(choice == 1 || (choice == 2 && turn == 1)) {
+      cout << "Choose a square to jump to (row column): ";
       cin >> tempa >> tempb;
     }
     else if (choice == 3) {
+      sleep(1);            //wait for one second before executing the move
       tempa = moves[0];  //put moves coordinates into tempa and tempb
       tempb = moves[1];
       moves.erase(moves.begin()); //pop those coordinates off moves
@@ -576,7 +578,7 @@ void checkers::fill_AI_vars() {
 	      if(j-1 >= 0 && (i-k >= 0 && i-k < 8)) {  //use j-1 to check left of the king and use i-k to check both directions for king O's and X's
 		if(board[i-k][j-1].getTeam() == 0) {   //Check left diagonals for null spots 
 		  temp.clear();
-		  cout << "found move from " << i << " " << j << " to " << i-k << " " << j-1 << endl;
+		  cout << "found move from " << i << " " << j << " to " << i-k << " " << j-1 << endl; //debugging
 		  temp.push_back(i);
 		  temp.push_back(j);
 		  temp.push_back(i-k);
@@ -587,7 +589,7 @@ void checkers::fill_AI_vars() {
 	      if(j+1 < 8 && (i-k >= 0 && i-k < 8)) {   //use j+1 to check right of the king and use i-k to check both directions for king O's and X's
 		if(board[i-k][j+1].getTeam() == 0) {   //Check right diagonals for null spots 
 		  temp.clear();
-		  cout << "found move from " << i << " " << j << " to " << i-k << " " << j+1 << endl;
+		  cout << "found move from " << i << " " << j << " to " << i-k << " " << j+1 << endl; //debugging
 		  temp.push_back(i);
 		  temp.push_back(j);
 		  temp.push_back(i-k);
@@ -604,7 +606,7 @@ void checkers::fill_AI_vars() {
 	    if(j-1 >= 0 && (i+1 >= 0 && i+1 < 8)) { //for turn == -1 (team o)
 	      if(board[i+1][j-1].getTeam() == 0) { //if there is a null spot available for move
 		temp.clear();
-		cout << "found move from " << i << " " << j << " to " << i+1 << " " << j-1 << endl;
+		cout << "found move from " << i << " " << j << " to " << i+1 << " " << j-1 << endl; //debugging
 		temp.push_back(i);
 		temp.push_back(j);
 		temp.push_back(i+1);
@@ -615,7 +617,7 @@ void checkers::fill_AI_vars() {
 	    if(j+1 < 8 && (i+1 >= 0 && i+1 < 8)) { //for turn == 1 (team x)
 	      if(board[i+1][j+1].getTeam() == 0) {  //if there is a null spot available for move
 		temp.clear();
-		cout << "found move from " << i << " " << j << " to " << i+1 << " " << j+1 << endl;
+		cout << "found move from " << i << " " << j << " to " << i+1 << " " << j+1 << endl; //debugging
 		temp.push_back(i);
 		temp.push_back(j);
 		temp.push_back(i+1);
@@ -630,7 +632,7 @@ void checkers::fill_AI_vars() {
     }
   }
   
-  cout << "the number of possible moves is " << AI_possible_moves.size() << endl;
+  cout << "the number of possible moves is " << AI_possible_moves.size() << endl;  //debugging
   int random = ((double)rand()/(double)RAND_MAX) * (AI_possible_moves.size());
   AI_move = AI_possible_moves[random];
   return;
@@ -760,7 +762,7 @@ int checkers::checkForJump() {
 //return 1 if x wins, -1 if o wins, 0 if nobody has won
 int checkers::checkForWin() {
   //First, check whole board for pieces of current player's type
-  cout << "First" << endl; //debugging
+  //cout << "First" << endl; //debugging
 
   int count = 0; //counter variable
   for(int i = 0; i < 8; i++) {
@@ -777,13 +779,13 @@ int checkers::checkForWin() {
   }
 
   //Next, check if there are no legal moves left for the current player
-  cout << "Before checkForMove" << endl; //debugging
+  //cout << "Before checkForMove" << endl; //debugging
 
   if(checkForMove()!=0) {  //If checkFor Move is true (if the current player has a move available on the board)
     return 0;           //There is a legal move: game is not over
   }
 
-  cout << "Before checkForJump" << endl;  //debugging
+  //cout << "Before checkForJump" << endl;  //debugging
 
   if(checkForJump()!=0) {  //if there is a jump available for the current player
     return 0;           //The game is not over
