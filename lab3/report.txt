@@ -1,0 +1,32 @@
+/**********************************
+Report on Lab 3
+Craig Cahillane and Rachael Creager
+**********************************/
+
+Answers to Lab Questions:
+In order to make a base class more abstract, we can include a lot of variables in the base class private sector, even those of which may go unused.  Then, in the derived class,
+we can put in only really specific variables that are needed, and functions that apply only to this one derived class and its variables.
+
+A virtual function is like our print() function in the second part of the lab.  It can be implemented by both the base class and the derived classes.  A pure virtual function 
+can only be implemented in derived classes.  We did not use any pure virtual functions in this lab.
+For example, if our print function had been in a class Package but could not print Packages, but only TwoDayPackages and OvernightPackages.  This works best if you know you will
+need to print most derived classes, but cannot print a general idea of a "Package", such as, for example, a shape.  One can print a triangle or square, but not a "shape".
+
+For this lab, neither program interacted directly with the user.
+To alter the program, a user must go inside the program on declare an object with the desired parameters.
+
+From the programmer's perspective, the pirate bank account program initialized two accounts, one default and one non-default, and two boat loans and two
+crew statuses for either account.  With each boat loan and crew, an account was generated automatically to go along with it since both BoatLoan and CrewStats were derived 
+classes out of the base class BankAccount.  We then ran the functions generated in both base and derived classes on the derived objects to show the inheritance of the base 
+class worked.  Later, we changed BankAccount to be passed along via composition, i.e. putting in a base class object in each derived class.  The second part of the lab, Package,
+works by having a base class, Package, be inherited by two derived classes, TwoDayPackage and OvernightPackage.  Then, all the functions in Package are usable in the other two 
+derived classes, just like before, only this time without composition.  You can declare objects with any amount of parameters you want included, since all the parameters are 
+equipped with initializers if that parameter is not filled.
+Specifically, fulfilling the requirement for an array of objects proved difficult.  We allocated memory for a double pointer, then input the amount of space needed was an array 
+of three objects of type * TwoDayPackage, and later, four objects of type OvernightPackage.  We then ran a loop inputting different costs rates based on the iteration, changing 
+only the cost output at the end of the loop.  After each iteration, we printed the results, including the package name, address, city, state, zipcode, and weight.
+We also tallied the total amount charged over all the packages in the array.  We then deleted the array of pointers to objects.  
+
+For evalation of the correctness of the program, we ran a lot of print statements.  At one point the flatrate variable was being changed within the loop of objects, but the cost
+was not being calculated based upon the changed flatrate, as we figured out when running print commands within the loop and within the class's function of CalculateCost.  We had
+to alter the CalculateCost function, but in the end the correct cost was calculated.  Otherwise, the program ran smoothly once compiled.
