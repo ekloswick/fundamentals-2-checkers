@@ -43,7 +43,25 @@ checkers::checkers() {
     cout << "1: Human vs. Human game" << endl;
     cout << "2: AI vs. Human game" << endl;
     cout << "3: Example game: Enter name of a .txt file to play." << endl;
+    cout << "4: Instructions" << endl;
     cin >> choice;
+    if (choice == 4) {
+      ifstream myfile;
+      string line;
+      myfile.open("instructions.txt");
+      if(myfile.is_open()) {
+	while(myfile.good()) {
+	  getline(myfile,line);
+	  cout << line << endl;
+	}
+	
+	myfile.close();
+      }
+      else {
+	cout << "ERROR: Instructions failed to open" << endl;
+      }
+      choice = 0;
+    }
   } while(choice != 1 && choice != 2 && choice != 3 );
 
   if(choice == 3) {             //if they chose example game
@@ -56,7 +74,6 @@ checkers::checkers() {
       while(myfile.good()) {    //and does not equal EOF
 	int temp;               
 	myfile >> temp;         //read in from the file
-	//cout << temp << " ";    //debugging
 	moves.push_back(temp);  //and push coordinates onto vector moves
       }
       moves.pop_back();         //correcting an unknown problem where the last number was pushed on twice when reading the file...
