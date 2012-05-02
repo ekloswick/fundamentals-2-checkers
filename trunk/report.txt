@@ -1,0 +1,23 @@
+/*********************
+Final Lab Report.txt
+Checkers Project
+Craig Cahillane
+Rachael Creager
+*********************/
+
+For our final project, we decided to write a checkers program that would allow the user to play against another player or an AI. In the end, we added instructions and "example game" mode that plays another game automatically. Our program works exactly as planned, even with the included parts. The user must be careful with the inputs, but otherwise, making errors that crash our program is difficult.
+
+From the user's perspective, the program works by first asking what mode the user wants to use. The user chooses and that mode is executed. The four modes are user vs. user, user vs. AI, example game, and instructions.  Instructions prints out instructions on how to play.  User vs. User lets the user play both sides, User vs. AI lets the user play the AI that makes only random moves, and example game lets the user watch a movie of a game and take over play at a certain special point. 
+To input moves in the game, the user must first select the piece to move, then select the spot to move to. In order to select a spot, the coordinates of the board are provided on the edges, and the user inputs them row first, the column with a space in between. If a piece with no legal move is chosen, an error message is displayed and the user is allowed to try again. After the user selects his piece successfully, he can choose where to move his piece as long as the move is legal. He must make a jump if possible, but if not he if free to choose any piece with a legal move.  Note: He cannot deselect a piece after he chooses it, so beware.
+THE USER MUST NOT INPUT NON-INTS.
+THE USER MUST NOT INPUT ANYTHING MORE OR LESS THAN TWO INTS.
+The first will crash the program instantly. The second will confuse the program. Inputting one int will cause the game to wait for a second input, which is okay. Inputting three or more ints will cause the game to use those inputs for the next parts of the game, which is confusing. 
+To play the AI, you choose gametype 2 and then the random AI takes over for the o pieces, with the user controlling the x's.  The game proceeds until it is over.
+For example mode, to speed things up in grading and checking our program works, we added the feature that you can watch a checkers movie of a game we played using .txt files of moves. We have four different games you can watch. The movie then stops at certain points and lets the user take over at the critical points in the game.
+
+From the programmer's perspective, our program uses composition of the class piece within the class checkers. Each spot of the 2D vector board is a piece, and the piece holds all the properties of that space, such as if the space is playable, if the piece is an x, o, or blank, and if the piece is a King or not.  This made writing the functions for changing the piece's values correctly in checkers.cpp much easier since all the information was stored conveniently.
+Our program's main function used only two parts of checkers.cpp: the constructor and the function play(). play() was one of the shortest functions in and of itself, but nearly every line is calling another function or starting a while loop. So data hiding for our project went very well. Our functions are isolated, making debugging simple, and all are tied together in the top-level play(). The constructor handles a lot of instantiating itself, like filling the board with pieces and getting the game type from the user.
+
+Debugging our large program was difficult, but because of the simple program structure any problems we encountered were quickly determined and eliminated. Many cout statements can be found commented out all over our code where were checked our inputs and values. Most of our debugging for the game itself took a very long time, since inputting the moves in the terminal is not simple, so we created the "example game" mode to help both ourselves and you in determining the code works correctly. This way we could fast-forward to problem spots, and find out if our print() statements looked right, if sleep happened at the right time, and if odd parts of the rules, like doublejumps and kinging, worked correctly.  
+
+In the end, our code worked perfectly with the additional parts, and the program structure made it seem like a thing of beauty with the main.cpp implementation. Checkers was a suitably complex game for our purposes, and I feel we gave it a fair representation in our final project.
