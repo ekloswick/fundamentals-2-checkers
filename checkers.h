@@ -24,9 +24,9 @@ class checkers {
   void executeJump();                //executes jump in play function
   void makeKing();                   //finds pieces in back row and kings them
   void fill_AI_vars();               //fills AI_possible_moves and AI_move for a given turn
-  void AI_next_jump(int i ,int j);        //if the AI reaches a double jump, use this to fill in the next jump
-  int checkPieceMove(int i, int j);  //returns turn if the piece associated with board[m][n] has a move, false if not
-  int checkPieceJump(int i, int j);  //returns turn if the piece associated with board[m][n] has a jump, false if not
+  void AI_next_jump(int, int);        //if the AI reaches a double jump, use this to fill in the next jump
+  int checkPieceMove(int, int);  //returns turn if the piece associated with board[m][n] has a move, false if not
+  int checkPieceJump(int, int);  //returns turn if the piece associated with board[m][n] has a jump, false if not
   int checkForMove();                //returns 1 if x can move, -1 if o can move, 0 if no moves available for current player on entire board
   int checkForJump();                //returns 1 if x can jump, -1 if o can jump, 0 if no jumps available for current player
   int checkForWin();                 //returns 1 if x wins, -1 if o wins, 0 if nobody has won
