@@ -1,14 +1,63 @@
-/*********************************
+----------------------
 Final Checkers Project
+----------------------
 Authors:
-Rachael Creager
-Craig Cahillane
+-Rachael Creager
+-Craig Cahillane
+----------------------
 Language:
-C++
-Date:
-5/1/12
+-C++
+----------------------
 Program Requirements:
-Unix Terminal
-GNU G++ Compiler
-**********************************/
+-Unix Terminal
+-GNU G++ Compiler
+----------------------
 
+------------------
+Table of Contents:
+------------------
+	-Overview
+	-How To Install
+	-User Manual
+	-Warnings
+
+---------
+Overview:
+---------
+
+Checkers is a terminal based game based on the board game. In Checkers, the user can run the game in three different modes: User-vs-user, user-vs-AI, and example. In user-vs-user, the user enters the moves for both players using the terminal and a board coordinate system. In user-vs-AI, the user enters the moves for player x and the program selects random rule-abiding moves for player o. In example mode, the program reads input from .txt files and moves for both players in interesting ways.
+
+---------------
+How To Install:
+---------------
+
+To install Checkers, run "make" from the terminal in the directory containing all files:
+     -checkers.cpp
+     -checkers.h
+     -piece.cpp
+     -piece.h
+     -main.cpp
+     -makefile
+     -instructions.txt
+     -doublejump.txt
+     -kingme.txt
+     -diamond.txt
+     -victory.txt
+
+------------
+User Manual:
+------------
+
+Once Checkers has been compiled, run the exectuable Checkers to start the game.
+The game will first give you 4 options: (1) Human vs. Human, (2) AI vs. Human, (3) Example Game, and (4) Instructions. Type the number cooresponding to your choice to begin. 
+Gametypes: If (1), (2), or (3) is selected, a Checkers board is displayed the game type selected begins.  If (4) is selected, instructions for how to play are included.  For (1), the user plays both sides of the game board, inputting piece selections and moves for both x and o. For (2), the user inputs only for the x pieces, and an AI selects moves for the o pieces. For (3), the game plays a checkers movie based on which .txt you select to play. At some distinct point in the game, the movie will stop and allow the user to take over for both sides like in a type (1) game.
+Gameplay: When a type (1) and (2) game starts, a prompt will appear asking for input for X's move.  The prompt includes basic instructions for the move, telling the user to select a piece using the coordinate system provided on the board. The user inputs two integers with a space in between cooresponding to the row and column of the piece desired. If the input is invalid, an error message will appear and ask the player to try again. If the input is valid, a second prompt will appear asking for the coordinates of the move itself. If there are no errors, the move is executed, and it is o's turn. In gametype (1), this continues until the end of the game.  In gametype (2), the AI executes a move for o and allows the player to play again. The game ends when all of one player's pieces are eliminated, or a player has no legal moves.  
+
+
+---------
+Warnings:
+---------
+
+-Input only integers. Anything other than integers will cause the program to crash.
+-Input only two integers at a time. If fewer are given, the game will wait for another to be inputted. If more are given, the game will hold all integers inputted as part of the coordinates for the next move, likely resulting in an error.  For example, if the user provides the input "5 6 4", the first two integers "5 6" will register as the first move, but "4" will be held as the first coordinate for the next move. 
+-Be careful when selecting which piece you want to move. If you select a piece without a legal move, the game will not allow it, but if you select a piece with a legal move that you did not wish to move, you cannot deselect the piece.
