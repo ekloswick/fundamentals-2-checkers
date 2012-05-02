@@ -1,3 +1,9 @@
+/*******************************************************************************
+piece.cpp
+Craig Cahillane
+Rachael Creager
+This code instantiates the functions in piece.h for easy use in checkers.cpp. The get() and set() functions written here allow checkers.cpp to access private variables within the piece class. 
+ **************************************************************************** */
 #include "piece.h"
 
 //constructor (to be changed in checkers.cpp)

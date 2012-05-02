@@ -1,3 +1,9 @@
+/*******************************************************************************
+piece.h
+Craig Cahillane
+Rachael Creager
+This code defines the piece class, which composes the checkers class board. The below functions are used extensively in checkers.cpp, especially the get() set of functions, in finding the properties of each piece with respect to one another.
+ ******************************************************************************/
 #ifndef PIECE_H 
 #define PIECE_H
 #include <iostream>

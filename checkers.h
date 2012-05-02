@@ -1,3 +1,10 @@
+/*******************************************************************************
+checkers.h
+Craig Cahillane
+Rachael Creager
+This code defines all the functions used in the checkers class, and the private variable 2D vector board composed of the class piece. This important example of composition in our code made writing the functions in checkers.cpp much simpler. The most important function here is play(), since this function is responsible for calling all the other ones in sequence.
+
+ **************************************************************************** */
 #ifndef CHECKERS_H
 #define CHECKERS_H
 
