@@ -1,3 +1,11 @@
+/*******************************************************************************
+checkers.cpp
+Craig Cahillane 
+Rachael Creager
+This is the code for the functions for the checkers class defined in checkers.h. It controls both creating a board in the constructor and playing the game, which revolves around the play() function, which calls all the other functions involved in making Checkers work.
+
+*******************************************************************************/
+
 #include "checkers.h"
 #include "piece.h"
 
